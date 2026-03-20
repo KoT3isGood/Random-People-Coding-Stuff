@@ -3,5 +3,12 @@
 
 void _entry()
 {
-	puts("F**k your sh*tty slop project"); // IDK what this does but someone change it please 
+    vga_clear();
+    vga_set_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
+    puts("--- Community OS v0.1 ---\n");
+    vga_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    puts("Built by random people on the internet.\n\n");
+
+    /* Hangs forever */
+    for (;;) {}
 }
