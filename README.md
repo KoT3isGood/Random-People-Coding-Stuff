@@ -75,7 +75,7 @@ If you want a pre-built Image email us
 Also, you can join the community slack [here](https://join.slack.com/t/communtiyos/shared_invite/zt-3t3iltj77-5JTo~dkpCm44tZcyA0Or_w)
 ## Pictures
 
-<img width="719" height="458" alt="image" src="https://github.com/user-attachments/assets/4955f87a-e402-4e17-91e9-24f6fdab67d3" />
+![2026-03-22 20-42-07](https://github.com/user-attachments/assets/4af57872-342f-45e0-9eb0-31b1033c9d54)
 
 
 ## Contributors: 
