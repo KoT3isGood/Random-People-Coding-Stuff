@@ -11,3 +11,25 @@ void* memcpy(void* dest, const void* src, unsigned long n) {
 
     return dest;
 }
+
+// [Ember2819: BEGIN - memset implementation]
+void* memset(void* dest, int val, unsigned long n) {
+    unsigned char* d = dest;
+    for (unsigned long i = 0; i < n; i++) {
+        d[i] = (unsigned char)val;
+    }
+    return dest;
+}
+// [Ember2819: END]
+//replace with real allocator later but should be fine for now
+static unsigned char heap[65536];
+static unsigned long heap_ptr = 0;
+
+void* malloc(unsigned long size) {
+    if (heap_ptr + size > sizeof(heap)) {
+        return 0;
+    }
+    void* p = &heap[heap_ptr];
+    heap_ptr += size;
+    return p;
+}
