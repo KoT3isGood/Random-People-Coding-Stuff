@@ -15,6 +15,7 @@ static void cmd_test(uint8_t color);
 static Command commands[] = {
     { "help",  cmd_help  },
     { "hello", cmd_hello },
+    { "contributors", cmd_contributors},
     { "test",  cmd_test  },
 };
 
@@ -34,6 +35,12 @@ static void cmd_hello(uint8_t color) {
 
 static void cmd_test(uint8_t color) {
     printf("\nTest command has run successfully", color);
+}
+
+static void cmd_contributors(uint8_t color) {
+    printf("--- Contributors ---");
+    printf("Ember2819")
+    printf("Sifi11")
 }
 
 // ---- dispatcher ----
