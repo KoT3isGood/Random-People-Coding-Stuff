@@ -33,8 +33,6 @@ void _entry()
         input(buff, 512, TERM_COLOR);
         process_input(buff);
 
-        // Adds a new line and then restarts the loop
-        putchar('\n', TERM_COLOR);
     }
 
     //asm volatile ("hlt");

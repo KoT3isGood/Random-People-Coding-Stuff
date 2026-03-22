@@ -28,16 +28,16 @@ static void cmd_help(uint8_t color) {
     printf("contributors - Displays names of all contributors\n", color);
     printf("setkeyswe - Sets keyboard layout to Swedish QWERTY\n", color); // Zorx555 - Keyboard layout commands
     printf("setkeyus - Sets keyboard layout to US QWERTY\n", color);
-    printf("setkeyuk - Sets keyboard layout to UK QWERTY", color); // MorganPG1 - Add UK Keyboard layout
-    printf("\nclear  - clear the screen", color); //ember
+    printf("setkeyuk - Sets keyboard layout to UK QWERTY\n", color); // MorganPG1 - Add UK Keyboard layout
+    printf("clear  - clear the screen\n", color); //ember
 }
 
 static void cmd_hello(uint8_t color) {
-    printf("\nHello, world!", color);
+    printf("\nHello, world!\n", color);
 }
 
 static void cmd_test(uint8_t color) {
-    printf("\nTest command has run successfully", color);
+    printf("\nTest command has run successfully\n", color);
 }
 
 static void cmd_contributors(uint8_t color) {
@@ -55,23 +55,23 @@ static void cmd_contributors(uint8_t color) {
     printf("c-bass\n", color);
     printf("u/EastConsequence3792\n", color);
     printf("MorganPG1\n", color);
-    printf("Zorx555", color);
+    printf("Zorx555\n", color);
 }
 
 static void cmd_setkeyswe(uint8_t color) {
     set_layout(LAYOUTS[1]); // Changed to work with my layout system
-    printf("\nKeyboard layout set to Swedish QWERTY", color);
+    printf("\nKeyboard layout set to Swedish QWERTY\n", color);
 }
 
 static void cmd_setkeyus(uint8_t color) {
     set_layout(LAYOUTS[0]); // Changed to work with my layout system
-    printf("\nKeyboard layout set to US QWERTY", color);
+    printf("\nKeyboard layout set to US QWERTY\n", color);
 }
 
 
-static void cmd_setkeyuk(uint8_t color) {
+static void cmd_setkeyuk(uint8_t color) { // Added by MorganPG1
     set_layout(LAYOUTS[2]); 
-    printf("\nKeyboard layout set to UK QWERTY", color);
+    printf("\nKeyboard layout set to UK QWERTY\n", color);
 }
 
 static void cmd_clear(uint8_t color) {
@@ -94,5 +94,5 @@ void run_command(unsigned char *input, uint8_t color) {
             return;
         }
     }
-    printf("\nUnknown command. Type 'help' for available commands", color);
+    printf("\nUnknown command. Type 'help' for available commands\n", color);
 }
