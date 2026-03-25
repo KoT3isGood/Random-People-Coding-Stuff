@@ -16,7 +16,7 @@ void _entry()
 {
     // Initialise display.
     vga_clear(TERM_COLOR);
-    printf("----- COMMUNITY OS v0.5 -----\n", TERM_COLOR);
+    printf("----- COMMUNITY OS v1.0 -----\n", TERM_COLOR);
     printf("Built by random people on the internet.\n", TERM_COLOR);
     printf("Use help to see available commands.\n", TERM_COLOR);
 

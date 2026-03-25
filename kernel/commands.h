@@ -24,6 +24,8 @@ static void cmd_clear(uint8_t color);
 //TheOtterMonarch:version
 static void cmd_version(uint8_t color);
 
+static void cmd_comos(uint8_t color);
+
 //Pumpkicks:gdt, idt & timer
 static void cmd_init_gdtidt(uint8_t color);
 static void cmd_start_timer(uint8_t color);
