@@ -166,9 +166,9 @@ itos:
 ;; Messages
 
 INIT_MSG	db "GeckoOS Bootloader 1.0", 0xD, 0xA, 0x0
-PROTECTED_MSG	db "[Boot]: Entering protected mode.", 0xD, 0xA, 0x0
-DISK_ERR_MSG	db "[Boot]: Couldn't read disk: ", 0x0
-DISK_MSG	db "[Boot]: Attempting to read drive.", 0xD, 0xA, 0x0
+PROTECTED_MSG	db "Entering protected mode.", 0xD, 0xA, 0x0
+DISK_ERR_MSG	db "Couldn't read disk: ", 0x0
+DISK_MSG	db "Attempting to read drive.", 0xD, 0xA, 0x0
 PROMPT_MSG	db "What drive to boot from? (1 - This drive, 2 - Next drive, 3 - HDD 1)", 0xD, 0xA, 0x0
 NEWLINE		db 0xA, 0xD, 0x0
 buffer db 16 dup(0) 	;; DI not initialised yet
@@ -217,6 +217,31 @@ protected_mode_exec:
 	;; Project is so large now the OS overwrites the bootloader if its loaded at 0x1000
 
 	;;hlt
+
+times 446 - ($ - $$) db 0
+	; MBR
+	db 0x80
+	db 0x0
+	db 0x0
+	db 0x0
+	db 0xC
+	db 0x0
+	db 0x0
+	db 0x0
+	dd 0x0
+	dd 0x800
+
+	db 0x80
+	db 0x0
+	db 0x0
+	db 0x0
+	db 0xC
+	db 0x0
+	db 0x0
+	db 0x0
+	dd 0x800
+	dd 0x1
+
 times 510 - ($ - $$) db 0
 
 ;; Boot signature
