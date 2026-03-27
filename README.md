@@ -43,9 +43,11 @@ If you contribute at all in any way to the project, please add your name to the 
 **NOTE: THESE INSTRUCTIONS ARE TARGETING LINUX BASED SYSTEMS, IF YOU DON'T USE LINUX THEN INSTALL LINUX ON A VIRTUAL MACHINE TO FOLLOW THESE**
 
 ### Step 1 - Install required build tools
-I am using Ubuntu for this guide, the following command will install the required tools on any Ubuntu based distro
-
+For Debian/Ubuntu and derivatives
 `sudo apt install build-essential binutils nasm clang qemu-system-x86`
+
+For Arch and derivatives
+`sudo pacman -S base-devel binutils nasm clang qemu-system-x86 ccache`
 
 This installs:
  - NASM (for assembling the bootloader)
