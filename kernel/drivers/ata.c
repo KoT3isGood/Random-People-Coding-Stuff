@@ -78,6 +78,7 @@ static int ata_check_drive(int drive) {
 
 	struct kdrive_t kdrive = {};
 	kdrive.userdata1 = drive;
+	kdrive.sector_size = 512;
 	kdrive.read = (kdrive_read_sectors)ata_kdrive_read_sectors;
 	kdrive.write = (kdrive_write_sectors)ata_kdrive_write_sectors;
 	drive_present[drive] = 1;
@@ -127,7 +128,7 @@ int ata_read_sectors(int drive, uint32_t lba, uint8_t count, uint8_t *buf) {
             p[s * 256 + i] = inw(ATA_PRIMARY_BASE + ATA_REG_DATA);
         }
     }
-    return 0;
+    return count;
 }
 
 int ata_write_sectors(int drive, uint32_t lba, uint8_t count, const uint8_t *buf) {

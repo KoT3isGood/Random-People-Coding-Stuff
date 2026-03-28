@@ -21,7 +21,7 @@ static void load_parameters( struct kdrive_t *drive )
 
 		drive->partitions.count = 4;
 		drive->partitions.type = PARTITION_MBR;
-		drive->partitions.partitions = malloc(sizeof(struct partition_t));
+		drive->partitions.partitions = kmalloc(sizeof(struct partition_t));
 		for ( i = 0; i < 4; i++ )
 		{
 			drive->partitions.partitions[i].type = FS_FAT16;

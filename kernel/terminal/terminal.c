@@ -55,6 +55,12 @@ void printc(char* data, uint8_t COLOR) {
 		putchar(data[i], COLOR);
 	}
 }
+
+void kprintf( int severity, char* data, ...) {
+	for (size_t i = 0; data[i]; i++) {
+		putchar(data[i], VGA_COLOR_WHITE);
+	}
+}
 void print(char* data) {
 	for (size_t i = 0; data[i]; i++) {
 		putchar(data[i], VGA_COLOR_WHITE);

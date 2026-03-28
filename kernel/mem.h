@@ -10,7 +10,9 @@ void* memcpy(void* dest, const void* src, unsigned long n);
 
 //Ember2819
 void* memset(void* dest, int val, unsigned long n);
-void* malloc(unsigned long size);
+
+void kalloc_init();
+void* kmalloc(unsigned long size);
 
 //Pumpkicks
 extern unsigned long memend; // The memory size from the 0x1000
