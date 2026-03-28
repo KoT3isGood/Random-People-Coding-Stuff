@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include "terminal/terminal.h"
+#include "mem.h"
 void* memcpy(void* dest, const void* src, unsigned long n) {
     // n = Number of bytes
 
@@ -31,15 +33,26 @@ int strlen(char* ptr) {
 }
 
 //replace with real allocator later but should be fine for now
+//kotofyt: it is not
 extern unsigned char __bss_start;
 extern unsigned char __bss_end;
-static unsigned long heap_ptr = 0;
+static void *heap_ptr;
 
-void* malloc(unsigned long size) {
-    if ((heap_ptr + size) > __bss_end) {
-        return 0;
-    }
-    void* p = (void*)(uintptr_t)(&__bss_start)[heap_ptr];
-    heap_ptr += size;
-    return p;
+static unsigned long mem_max;
+
+
+uint64_t kalloc_get_memory_maps_e820()
+{
+	// they should be at 0x8000
+}
+
+void kalloc_init()
+{
+	heap_ptr = (void*)0x200000;
+}
+
+void* kmalloc(unsigned long size) {
+	void *ptr = heap_ptr;
+	heap_ptr+=size;
+	return ptr;
 }

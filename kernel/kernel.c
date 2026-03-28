@@ -21,6 +21,8 @@ static void kmain();
 
 __attribute__((section(".text.entry"))) // Add section attribute so linker knows this should be at the start
 void _entry() {
+
+	kalloc_init();
     // Initialise display.
     vga_clear(TERM_COLOR);
     printc("----- COMMUNITY OS v1.0 -----\n", TERM_COLOR);
