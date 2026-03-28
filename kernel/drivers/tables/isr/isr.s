@@ -84,3 +84,17 @@ ISR_NOERRCODE 28
 ISR_NOERRCODE 29
 ISR_NOERRCODE 30
 ISR_NOERRCODE 31
+
+[EXTERN csyscall]
+[GLOBAL syscall]
+syscall:
+	cli
+	pusha 
+
+
+	call csyscall
+
+
+	popa
+	sti
+	iret

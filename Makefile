@@ -7,7 +7,7 @@ AS = nasm
 LD = ld
 # Truncate (to make the kernel.bin divisible by 512)
 TRUNCATE = truncate
-TRUNC_AMNT = 131072
+TRUNC_AMNT = 131072 # 256 * 512, we may need a bit more sectors
 # Objcopy (to translate elf to bin)
 OBJCOPY = objcopy
 OBJCOPY_ARGS = -O binary
@@ -16,7 +16,8 @@ AS_FLAGS = -f bin
 LD_FLAGS = -m elf_i386
 KERNEL_OBJECTS = kernel/kernel.o kernel/mem.o
 DRIVER_OBJECTS = kernel/drivers/vga.o kernel/drivers/keyboard.o kernel/drivers/tables/idt/idt_c.o kernel/drivers/tables/idt/idt_s.o \
-	kernel/drivers/tables/isr/isr_c.o kernel/drivers/tables/isr/isr_s.o kernel/drivers/tables/irq/irq_c.o kernel/drivers/tables/irq/irq_s.o kernel/drivers/tables/timer/timer.o
+	kernel/drivers/tables/isr/isr_c.o kernel/drivers/tables/isr/isr_s.o kernel/drivers/tables/irq/irq_c.o kernel/drivers/tables/irq/irq_s.o \
+	kernel/drivers/tables/timer/timer.o kernel/drivers/tables/gdt/gdt.o kernel/drivers/tables/tss/tss.o
 MISC_OBJECTS = kernel/colors.o kernel/terminal/terminal.o kernel/commands.o kernel/layouts/kb_layouts.o \
                kernel/comos/comos_lexer.o kernel/comos/comos_parser.o kernel/comos/comos_interp.o # ADDED
 # Ember2819

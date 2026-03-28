@@ -20,6 +20,7 @@ extern void irq12();
 extern void irq13();
 extern void irq14();
 extern void irq15();
+extern void syscall();
 
 /* This array is actually an array of function pointers. We use
 *  this to handle custom IRQ handlers for a given IRQ */
@@ -59,6 +60,12 @@ void irq_remap(void)
     outb(0xA1, 0x0);
 }
 
+void csyscall(registers_t r)
+{
+	print("hi\n");
+	outb(0x20, 0x20);
+};
+
 /* We first remap the interrupt controllers, and then we install
 *  the appropriate ISRs to the correct entries in the IDT. This
 *  is just like installing the exception handlers */
@@ -82,7 +89,9 @@ void irq_install()
     idt_set_gate(45, (uint32_t)irq13, 0x08, 0x8E);
     idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8E);
     idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
+    idt_set_gate(0x80, (uint32_t)syscall, 0x08, 0x8E | 0x60);
 }
+
 
 /* Each of the IRQ ISRs point to this function, rather than
 *  the 'fault_handler' in 'isrs.c'. The IRQ Controllers need
@@ -96,19 +105,19 @@ void irq_install()
 *  an EOI, you won't raise any more IRQs */
 void irq_handler(registers_t regs)
 {
-   // Send an EOI (end of interrupt) signal to the PICs.
-   // If this interrupt involved the slave.
-   if (regs.int_no >= 40)
-   {
-       // Send reset signal to slave.
-       outb(0xA0, 0x20);
-   }
-   // Send reset signal to master. (As well as slave, if necessary).
-   outb(0x20, 0x20);
+	// Send an EOI (end of interrupt) signal to the PICs.
+	// If this interrupt involved the slave.
+	if (regs.int_no >= 40)
+	{
+		// Send reset signal to slave.
+		outb(0xA0, 0x20);
+	}
+	// Send reset signal to master. (As well as slave, if necessary).
+	outb(0x20, 0x20);
 
-   if (irq_routines[regs.int_no - 32] != 0)
-   {
-       isr_t handler = irq_routines[regs.int_no - 32];
-       handler(&regs);
-   }
+	if (irq_routines[regs.int_no - 32] != 0)
+	{
+		isr_t handler = irq_routines[regs.int_no - 32];
+		handler(&regs);
+	}
 } 

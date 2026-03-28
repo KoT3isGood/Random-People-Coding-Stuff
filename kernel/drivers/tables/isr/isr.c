@@ -4,6 +4,12 @@
 void isr_handler(registers_t regs)
 {
     print("recieved interrupt: ");
-    print_hex(regs.int_no);
+    print_int(regs.int_no);
     print("\n");
+    if (regs.int_no == 13)
+    {
+	    for(;;);
+
+    }
+
 } 
