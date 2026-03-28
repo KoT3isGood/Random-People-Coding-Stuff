@@ -9,6 +9,7 @@
 #include "mem.h"
 #include "drivers/ata.h"
 #include "fs/fs.h"
+#include "fs/fat16.h"
 #include <stdint.h>
 
 
@@ -31,6 +32,7 @@ static Command commands[] = {
     { "ls",        cmd_ls        },  // List root directory
     { "cat",       cmd_cat       },  // Print a file's contents
     { "fsinfo",    cmd_fsinfo    },  // Show filesystem info (mostly for debugging)
+    { "touch",     cmd_touch     },  // Create a new file with content
 };
 
 static int num_commands = sizeof(commands) / sizeof(commands[0]);
@@ -55,6 +57,7 @@ static void cmd_help(uint8_t color) {
     printc("ls - List files in the FAT16 root directory\n", color);
     printc("cat - Print a file from the FAT16 volume (prompts for name)\n", color);
     printc("fsinfo - Show FAT16 volume/BPB details\n", color);
+    printc("touch - Create a new file with content on the FAT16 volume\n", color);
 }
 
 static void cmd_hello(uint8_t color) {
@@ -141,24 +144,13 @@ static void cmd_print_ticks(uint8_t color) {
 static struct drive_fs_t *fs;
 
 static void cmd_fsmount(uint8_t color) {
-	int i = 0;
-	/*
-	   printc("\nInitializing ATA driver...\n", color);
-	   int found = ata_init();
-	   if (!found) {
-	   printc("ATA: No drives detected.\n", VGA_COLOR_RED);
-	   printc("Hint: In QEMU, add: -drive format=raw,file=fat16.img\n", color);
-	   return;
-	   }
-	   */
-
-	// Report what was found
+	printc("\n", color);
 	if (!get_kdrive(1)) {
 		printc("No slave drive found. Is fat16.img attached as a second drive?\n", VGA_COLOR_RED);
 		return;
 	}
 	fs = fs_drive_open(get_kdrive(1));
-	if ( fs == 0 ) {
+	if (fs == 0) {
 		printc("Filesystem mount failed. Is fat16.img a valid FAT16 image?\n", VGA_COLOR_RED);
 		return;
 	}
@@ -196,59 +188,89 @@ static void cmd_ls(uint8_t color) {
 }
 
 static void cmd_cat(uint8_t color) {
-
 	struct fs_entries_t entries;
-	int i;
 	unsigned char fname[32];
+	int i, found;
 
-	if (!fs)
-	{
+	if (!fs) {
 		kprintf(SEVERITY_WARNING, "Not mounted\n");
 		return;
 	}
 
 	printc("\nEnter filename: ", color);
-
 	input(fname, 32, color);
 	printc("\n", color);
 
 	entries = fs->get_entries((void*)fs);
 
-
-	uint8_t readbuf[128];
-	int bytes = 128;
-	int j = 0;
-	;
-	while((bytes = entries.entries[0].file.read((void*)&entries.entries[0].file, j*128, 128, readbuf))>0)
-	{	
-		j++;
-		for (int i = 0; i < bytes; i++)
-			putchar(readbuf[i], color);
+	/* Search for the file by name */
+	found = -1;
+	for (i = 0; i < (int)entries.count; i++) {
+		if (entries.entries[i].type != ENTRY_FILE) continue;
+		const char *a = entries.entries[i].file.name;
+		const unsigned char *b = fname;
+		int match = 1;
+		while (*a && *b) {
+			char ca = (*a >= 'a' && *a <= 'z') ? *a - 32 : *a;
+			char cb = (*b >= 'a' && *b <= 'z') ? *b - 32 : *b;
+			if (ca != cb) { match = 0; break; }
+			a++; b++;
+		}
+		if (match && *a == '\0' && *b == '\0') { found = i; break; }
 	}
 
+	if (found < 0) {
+		printc("File not found: ", VGA_COLOR_RED);
+		printc((char*)fname, VGA_COLOR_RED);
+		printc("\n", color);
+		return;
+	}
+
+	uint8_t readbuf[128];
+	int bytes;
+	int j = 0;
+	while ((bytes = entries.entries[found].file.read(
+			(void*)&entries.entries[found].file, j * 128, 128, readbuf)) > 0) {
+		j++;
+		for (int k = 0; k < bytes; k++)
+			putchar(readbuf[k], color);
+	}
 	printc("\n", color);
 }
 
 static void cmd_fsinfo(uint8_t color) {
-/*
-	const FAT16_Volume *v = fat16_get_volume();
-	if (!v->mounted) {
-	printc("\nFilesystem not mounted. Run 'fsmount' first.\n", VGA_COLOR_RED);
-	return;
+	if (!fs) {
+		printc("\nFilesystem not mounted. Run 'fsmount' first.\n", VGA_COLOR_RED);
+		return;
 	}
-	printc("\n-- FAT16 Volume Info --\n", color);
-	printc("  Bytes/sector:      ", color); print_int(v->bpb.bytes_per_sector);   printc("\n", color);
-	printc("  Sectors/cluster:   ", color); print_int(v->bpb.sectors_per_cluster);printc("\n", color);
-	printc("  Reserved sectors:  ", color); print_int(v->bpb.reserved_sectors);   printc("\n", color);
-	printc("  FATs:              ", color); print_int(v->bpb.num_fats);            printc("\n", color);
-	printc("  Root entries:      ", color); print_int(v->bpb.root_entry_count);   printc("\n", color);
-	printc("  Sectors/FAT:       ", color); print_int(v->bpb.sectors_per_fat);    printc("\n", color);
-	printc("  Total sectors:     ", color); print_int(v->total_sectors);          printc("\n", color);
-	printc("  FAT LBA:           ", color); print_int(v->fat_lba);                printc("\n", color);
-	printc("  Root dir LBA:      ", color); print_int(v->root_dir_lba);           printc("\n", color);
-	printc("  Data area LBA:     ", color); print_int(v->data_lba);               printc("\n", color);
-	printc("-----------------------\n", color);
-*/
+	printc("\n", color);
+	fat16_print_info(fs, color);
+}
+
+static void cmd_touch(uint8_t color) {
+	unsigned char fname[32];
+	unsigned char content[256];
+
+	if (!fs) {
+		kprintf(SEVERITY_WARNING, "Not mounted\n");
+		return;
+	}
+
+	printc("\nFilename: ", color);
+	input(fname, 32, color);
+	printc("\nContent (single line): ", color);
+	input(content, 255, color);
+	printc("\n", color);
+
+	int result = fat16_create_file(fs, (char*)fname,
+	                               (const uint8_t*)content, strlen((char*)content));
+	if (result == 0) {
+		printc("File created: ", color);
+		printc((char*)fname, color);
+		printc("\n", color);
+	} else {
+		printc("Failed to create file (disk full or root dir full?)\n", VGA_COLOR_RED);
+	}
 }
 
 //Ember2819,COMOS language 
